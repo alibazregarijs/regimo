@@ -27,19 +27,22 @@ const FormField = <T extends FieldValues>({
   <Controller
     control={control}
     name={name}
-    render={({ field }) => (
-      <FormItem>
-        <FormLabel className="label">{label}</FormLabel>
-        <FormControl>
-          <Input
-            className="input"
-            placeholder={placeholder}
-            type={type}
-            {...field}
-          />
-        </FormControl>
-        <FormMessage />
-      </FormItem>
+    render={({ field , fieldState: { error } }) => (
+      <div>
+        <FormItem>
+          <FormLabel className="label">{label}</FormLabel>
+          <FormControl>
+            <Input
+              className="input"
+              placeholder={placeholder}
+              type={type}
+              {...field}
+            />
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+        {error && <p className="text-sm text-red-500 mt-1">{error.message}</p>}
+      </div>
     )}
   />
 );

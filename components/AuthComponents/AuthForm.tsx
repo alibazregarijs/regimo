@@ -8,9 +8,20 @@ import { Button } from "@/components/ui/button";
 import FormField from "./FormField";
 import { Form } from "@/components/ui/form";
 import Link from "next/link";
+import { formFieldsMaker } from "@/lib/utils";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { auth } from "@/firebase/client";
+import { signIn, signUp } from "@/lib/actions/auth.action";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const AuthForm = ({ type }: { type: "sign-up" | "sign-in" }) => {
   const isSignIn = type === "sign-in";
+  const formFields = formFieldsMaker({ type });
+  const router = useRouter();
 
   // ✅ Fix: Use isSignIn correctly in schema selection
   const AuthFormMaker = (isSignIn: boolean) => {
@@ -53,8 +64,65 @@ const AuthForm = ({ type }: { type: "sign-up" | "sign-in" }) => {
       : { name: "", email: "", password: "", confirmPassword: "" },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Form Submitted:", values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const { email, password, confirmPassword, name } = values;
+
+    try {
+      if (!isSignIn) {
+        const userCredentials = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        console.log(userCredentials, "creds");
+
+        const result = await signUp({
+          uid: userCredentials.user.uid,
+          name,
+          email,
+          password,
+          confirmPassword,
+        });
+        if (!result?.success) {
+          toast.error(result?.message);
+          return;
+        }
+        toast.success("Account created successfully , Please sign in.");
+        router.push("/sign-in");
+      } else {
+        const { email, password } = values;
+
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        const idToken = await userCredential.user.getIdToken();
+
+        if (!idToken) {
+          toast.error("Sign in failed");
+          return;
+        }
+
+        await signIn({
+          email,
+          idToken,
+        });
+
+        toast.success("Sign in successfully.");
+        router.push("/");
+      }
+    } catch (e: any) {
+      console.log(e)
+      if (e.code === "auth/email-already-in-use") {
+        toast.error("Email already in use.");
+      }
+      else if (e.code === "auth/invalid-credential") {
+        toast.error("Credentials are invalid.");
+      }
+    }
   }
 
   return (
@@ -65,36 +133,17 @@ const AuthForm = ({ type }: { type: "sign-up" | "sign-in" }) => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full max-w-[90%] md:max-w-1/2 space-y-6"
         >
-          {!isSignIn && (
+          {Object.entries(formFields).map(([key, field]) => (
             <FormField
+              key={key}
               control={form.control}
-              name="name"
-              label="Name"
-              placeholder="Your Name"
+              name={field.name}
+              label={field.label}
+              type={field.type}
+              placeholder={field.label}
             />
-          )}
-          <FormField
-            control={form.control}
-            name="email"
-            label="Email"
-            placeholder="Your Email"
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            label="Password"
-            type="password"
-            placeholder="Your Password"
-          />
-          {!isSignIn && (
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              label="Confirm Password"
-              type="password"
-              placeholder="Confirm Password"
-            />
-          )}
+          ))}
+
           <div className="flex justify-center">
             <Button type="submit">Submit</Button>
           </div>

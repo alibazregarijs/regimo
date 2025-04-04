@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
+import { isAuthenticated } from "@/lib/actions/auth.action";
+import { redirect } from "next/navigation";
 
-const HomeLayout = ({children}:{children:React.ReactNode}) => {
-  return (
-    <div>{children}</div>
-  )
-}
+const HomeLayout = async ({ children }: { children: React.ReactNode }) => {
+  const isUserAuthenticated = await isAuthenticated();
+  if (!isUserAuthenticated) redirect("/sign-in");
 
-export default HomeLayout
+  return <div>{children}</div>;
+};
+
+export default HomeLayout;
