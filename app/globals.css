@@ -159,6 +159,9 @@
   li {
     @apply text-light-100;
   }
+  Button {
+    @apply cursor-pointer
+  }
 }
 
 @layer components {
@@ -310,7 +313,7 @@
 }
 
 @utility blue-gradient-dark {
-  @apply bg-gradient-to-b from-[#171532] to-[#08090D];
+  @apply bg-gradient-to-b from-[#04040c] to-[#08090D];
 }
 
 @utility blue-gradient {

@@ -44,3 +44,24 @@ export const formFieldsMaker = ({ type }: { type: string }) => {
     };
   }
 };
+
+export const randomImage = (index: number) => {
+  const images = [
+    "/regime-food-vector1-removebg-preview.png",
+    "/regime-food-vector2-removebg-preview.png",
+    "/regime-food-vector3-removebg-preview.png",
+    "/regime-food-vector4-removebg-preview.png",
+    "/regime-food-vector5-removebg-preview.png",
+    "/regime-food-vector6-removebg-preview.png",
+    "/regime-food-vector7-removebg-preview.png",
+    "/regime-food-vector8-removebg-preview.png",
+  ];
+
+  if (index > images.length) {
+    return images[Math.floor(Math.random() * 9) + 1];
+  }
+
+  const randomIndex = Math.floor(1 * index);
+
+  return images[randomIndex];
+};
