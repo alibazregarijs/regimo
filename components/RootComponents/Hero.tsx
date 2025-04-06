@@ -1,12 +1,13 @@
 import Image from "next/image";
-import { Button } from "../ui/button";
-import ListingRegime from "./ListingRegime";
+import { Button } from "@/components/ui/button";
+import ListingRegime from "@/components/RootComponents/ListingRegime";
+import { AddModal } from "@/components/RootComponents/AddModal";
 
 const Hero = () => {
   return (
     <div className="flex flex-col">
       <div className="grid mt-10 grid-cols-12 mx-4 gap-4 w-full">
-        <div className="col-span-6 space-y-4">
+        <div className="md:col-span-6 col-span-12 space-y-4">
           <h3>
             We Provide You the Best Nutrition Regim You Can Ever Have ,We Are
             Here To Help You.
@@ -16,10 +17,12 @@ const Hero = () => {
             provident.
           </span>
           <div className="mt-4">
-            <Button>Get Started</Button>
+            <AddModal>
+              <Button>Get Started</Button>
+            </AddModal>
           </div>
         </div>
-        <div className="col-span-6">
+        <div className="md:col-span-6 col-span-12">
           <Image
             src="/hero.png"
             alt="hero"
@@ -30,9 +33,7 @@ const Hero = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-12 mt-20 mx-4 gap-4 w-full">
-        <ListingRegime />
-      </div>
+      <ListingRegime />
     </div>
   );
 };

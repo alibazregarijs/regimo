@@ -7,11 +7,11 @@ import { randomImage } from "@/lib/utils";
 import { Calendar2, Star1 } from "iconsax-react";
 
 const ListingRegime = () => {
-    console.log("salam dadad")
   return (
-    <>
+  
+          <div className="grid grid-cols-12 mt-20 gap-4 w-full">
       {regimes.map((regime, index) => (
-        <div key={regime.id} className="col-span-4 flex-start space-y-4 blue-gradient-dark p-4 rounded-[20px]">
+        <div key={regime.id} className="md:col-span-4 border col-span-12 space-y-4 blue-gradient-dark p-4 rounded-[20px]">
           <div className="w-[100px] h-[100px] relative">
             <Image
               src={randomImage(regime.id)}
@@ -36,7 +36,8 @@ const ListingRegime = () => {
           </div>
         </div>
       ))}
-    </>
+      </div>
+    
   );
 };
 

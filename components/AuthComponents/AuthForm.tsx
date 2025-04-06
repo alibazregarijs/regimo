@@ -75,8 +75,6 @@ const AuthForm = ({ type }: { type: "sign-up" | "sign-in" }) => {
           password
         );
 
-        console.log(userCredentials, "creds");
-
         const result = await signUp({
           uid: userCredentials.user.uid,
           name,
@@ -115,11 +113,10 @@ const AuthForm = ({ type }: { type: "sign-up" | "sign-in" }) => {
         router.push("/");
       }
     } catch (e: any) {
-      console.log(e)
+      console.log(e);
       if (e.code === "auth/email-already-in-use") {
         toast.error("Email already in use.");
-      }
-      else if (e.code === "auth/invalid-credential") {
+      } else if (e.code === "auth/invalid-credential") {
         toast.error("Credentials are invalid.");
       }
     }
