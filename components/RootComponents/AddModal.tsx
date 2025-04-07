@@ -88,12 +88,12 @@ export function AddModal({ children, post, onSubmit }: PostCardProps) {
   };
 
   return (
-    <PostCardContext.Provider 
-      value={{ 
-        post, 
-        formData, 
-        handleInputChange, 
-        handleSelectChange 
+    <PostCardContext.Provider
+      value={{
+        post,
+        formData,
+        handleInputChange,
+        handleSelectChange,
       }}
     >
       <Dialog>
@@ -127,12 +127,8 @@ AddModal.Content = function PostCardContent() {
 };
 
 AddModal.Body = function PostCardBody() {
-  const { 
-    post, 
-    formData, 
-    handleInputChange, 
-    handleSelectChange 
-  } = usePostCardContext();
+  const { post, formData, handleInputChange, handleSelectChange } =
+    usePostCardContext();
 
   return (
     <div className="grid gap-4 py-4">
@@ -151,14 +147,18 @@ AddModal.Body = function PostCardBody() {
                   value={formData[field.name] || ""}
                   placeholder={field.placeholder}
                   className="col-span-3"
-                  onChange={(e) => handleInputChange(field.name, e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange(field.name, e.target.value)
+                  }
                 />
               </div>
             ) : (
               <div className="space-y-2">
                 <Label>{field.label}</Label>
                 <Select
-                  onValueChange={(value) => handleSelectChange(field.name, value)}
+                  onValueChange={(value) =>
+                    handleSelectChange(field.name, value)
+                  }
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder={field.placeholder} />

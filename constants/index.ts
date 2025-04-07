@@ -39,6 +39,23 @@ export const modalFields = [
     label: "Gender",
     placeholder: "Select Gender",
     defaultValue: "Male",
+    inputType: [
+      { name: "Man", value: "man" },
+      { name: "Female", value: "female" },
+
+    ],
+  },
+  {
+    name: "type",
+    type: "text",
+    label: "Type",
+    placeholder: "Select Type",
+    defaultValue: "loss",
+    inputType: [
+      { name: "Loss", value: "loss" },
+      { name: "Gain", value: "gain" },
+
+    ],
   },
   {
     name: "weight",
@@ -56,7 +73,7 @@ export const modalFields = [
   },
   {
     name: "age",
-    type: "text",
+    type: "number",
     label: "Age",
     placeholder: "Enter Age",
     defaultValue: "23",
@@ -75,27 +92,19 @@ export const modalFields = [
   },
   {
     name: "waist_circumference",
-    type: "text",
+    type: "number",
     label: "Waist Circumference",
     placeholder: "Enter Waist CM",
     defaultValue: "60",
-    inputType: [
-      { name: "Low", value: "low" },
-      { name: "Medium", value: "medium" },
-      { name: "High", value: "high" },
-    ],
+    
   },
 
   {
     name: "bicep_circumference",
-    type: "text",
+    type: "number",
     label: "Bicep CM",
     placeholder: "Enter Bicep CM",
     defaultValue: "39",
-    inputType: [
-      { name: "Low", value: "low" },
-      { name: "Medium", value: "medium" },
-      { name: "High", value: "high" },
-    ],
+   
   },
 ];

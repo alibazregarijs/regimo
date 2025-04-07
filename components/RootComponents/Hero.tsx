@@ -1,21 +1,39 @@
 "use client";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import ListingRegime from "@/components/RootComponents/ListingRegime";
 import { AddModal } from "@/components/RootComponents/AddModal";
 import { modalFields } from "@/constants";
+import { useRegimeDispatch } from "@/store/hook";
+import { AddRegimeItem } from "@/store/RegimeSlice";
+import { RegimItem } from "@/types/root";
 
-const Hero = () => {
-  const myModalFields = {
-    title: "Add New Regime",
-    content: "Fill the form below to add a new regime",
-    buttonText: "Save",
-    fields : modalFields,
-  }
+const myModalFields = {
+  title: "Add New Regime",
+  content: "Fill the form below to add a new regime",
+  buttonText: "Save",
+  fields: modalFields,
+};
+
+const Hero = ({ userId }: { userId: string }) => {
+  const dispatch = useRegimeDispatch();
 
   const handleSubmit = (formData: Record<string, string>) => {
-    console.log('Form submitted:', formData);
-    // Handle form submission logic here
+    // Convert form data to match RegimItem type
+    const submissionData: RegimItem = {
+      userId: userId.toString(), // Make sure userId is defined
+      gender: formData.gender as "male" | "female",
+      type: "loss" ,
+      weight: formData.weight,
+      height: formData.height,
+      age: Number(formData.age), // Convert string to number
+      activity_level: formData.activity_level as "low" | "medium" | "high",
+      waist_circumference: Number(formData.waist_circumference),
+      bicep_circumference: Number(formData.bicep_circumference),
+    };
+
+    console.log(submissionData,"ok");
+
+    dispatch(AddRegimeItem(submissionData));
   };
 
   return (

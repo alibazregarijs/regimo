@@ -6,4 +6,16 @@ export type modalFields = {
   defaultValue: string;
 };
 
-
+export type RegimItem = {
+  userId: string;
+  gender: "male" | "female";
+  type: "loss" | "gain";
+  weight: string;
+  height: string;
+  age: number;
+  activity_level: "low" | "medium" | "high";
+  waist_circumference: number;
+  bicep_circumference: number;
+  averageRating?: number;
+  userLiked?: number;
+};
