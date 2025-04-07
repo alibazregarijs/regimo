@@ -61,6 +61,7 @@ function usePostCardContext() {
 }
 
 export function AddModal({ children, post, onSubmit }: PostCardProps) {
+  const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<Record<string, string>>(
     post.fields.reduce((acc, field) => {
       acc[field.name] = field.defaultValue || "";
@@ -85,6 +86,8 @@ export function AddModal({ children, post, onSubmit }: PostCardProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSubmit(formData);
+    setFormData({})
+    setOpen(false)
   };
 
   return (
@@ -96,7 +99,7 @@ export function AddModal({ children, post, onSubmit }: PostCardProps) {
         handleSelectChange,
       }}
     >
-      <Dialog>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button>{post.title}</Button>
         </DialogTrigger>

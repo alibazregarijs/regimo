@@ -6,6 +6,7 @@ import { modalFields } from "@/constants";
 import { useRegimeDispatch } from "@/store/hook";
 import { AddRegimeItem } from "@/store/RegimeSlice";
 import { RegimItem } from "@/types/root";
+import { useState } from "react";
 
 const myModalFields = {
   title: "Add New Regime",
@@ -16,13 +17,14 @@ const myModalFields = {
 
 const Hero = ({ userId }: { userId: string }) => {
   const dispatch = useRegimeDispatch();
+  const [closeModal, setCloseModal] = useState(false);
 
-  const handleSubmit = (formData: Record<string, string>) => {
+  const handleSubmit = async (formData: Record<string, string>) => {
     // Convert form data to match RegimItem type
     const submissionData: RegimItem = {
       userId: userId.toString(), // Make sure userId is defined
       gender: formData.gender as "male" | "female",
-      type: "loss" ,
+      type: "loss",
       weight: formData.weight,
       height: formData.height,
       age: Number(formData.age), // Convert string to number
@@ -31,9 +33,11 @@ const Hero = ({ userId }: { userId: string }) => {
       bicep_circumference: Number(formData.bicep_circumference),
     };
 
-    console.log(submissionData,"ok");
+    const resultAction = await dispatch(AddRegimeItem(submissionData));
+    if (resultAction.meta?.requestStatus === 'fulfilled') {
+      
+    }
 
-    dispatch(AddRegimeItem(submissionData));
   };
 
   return (

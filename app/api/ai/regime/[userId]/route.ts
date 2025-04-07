@@ -1,7 +1,6 @@
 import { generateText } from "ai";
 import { google } from "@ai-sdk/google";
 import { db } from "@/firebase/admin";
-import { doc, setDoc, collection } from "firebase/firestore";
 
 export async function GET(
   request: Request,
@@ -90,8 +89,6 @@ The goal is to create a well-balanced, health-optimized meal plan tailored to th
       createdAt: new Date().toISOString(), // Add timestamp
       updatedAt: new Date().toISOString(),
     };
-
-    const userRegime = await db.collection("regimes").add(regimeData);
 
     return Response.json(
       {
