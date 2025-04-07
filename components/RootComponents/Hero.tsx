@@ -1,9 +1,23 @@
+"use client";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import ListingRegime from "@/components/RootComponents/ListingRegime";
 import { AddModal } from "@/components/RootComponents/AddModal";
+import { modalFields } from "@/constants";
 
 const Hero = () => {
+  const myModalFields = {
+    title: "Add New Regime",
+    content: "Fill the form below to add a new regime",
+    buttonText: "Save",
+    fields : modalFields,
+  }
+
+  const handleSubmit = (formData: Record<string, string>) => {
+    console.log('Form submitted:', formData);
+    // Handle form submission logic here
+  };
+
   return (
     <div className="flex flex-col">
       <div className="grid mt-10 grid-cols-12 mx-4 gap-4 w-full">
@@ -17,8 +31,11 @@ const Hero = () => {
             provident.
           </span>
           <div className="mt-4">
-            <AddModal>
-              <Button>Get Started</Button>
+            <AddModal post={myModalFields} onSubmit={handleSubmit}>
+              <AddModal.Title />
+              <AddModal.Content />
+              <AddModal.Body />
+              <AddModal.Footer />
             </AddModal>
           </div>
         </div>
@@ -33,7 +50,9 @@ const Hero = () => {
         </div>
       </div>
 
-      <ListingRegime />
+      <div>
+        <ListingRegime />
+      </div>
     </div>
   );
 };
