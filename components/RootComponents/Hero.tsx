@@ -6,7 +6,11 @@ import { modalFields } from "@/constants";
 import { useRegimeDispatch } from "@/store/hook";
 import { AddRegimeItem } from "@/store/RegimeSlice";
 import { RegimItem } from "@/types/root";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRegimeSelector } from "@/store/hook";
+import { FetchRegimeItems } from "@/store/RegimeSlice";
+import Spinner from "@/components/Spinner";
+import { toast } from "sonner";
 
 const myModalFields = {
   title: "Add New Regime",
@@ -17,7 +21,12 @@ const myModalFields = {
 
 const Hero = ({ userId }: { userId: string }) => {
   const dispatch = useRegimeDispatch();
-  const [closeModal, setCloseModal] = useState(false);
+
+  const { items, loading, error } = useRegimeSelector((state) => state.regime);
+
+  useEffect(() => {
+    dispatch(FetchRegimeItems(userId));
+  }, [userId, dispatch]);
 
   const handleSubmit = async (formData: Record<string, string>) => {
     // Convert form data to match RegimItem type
@@ -34,10 +43,9 @@ const Hero = ({ userId }: { userId: string }) => {
     };
 
     const resultAction = await dispatch(AddRegimeItem(submissionData));
-    if (resultAction.meta?.requestStatus === 'fulfilled') {
-      
+    if (resultAction.meta?.requestStatus !== "fulfilled") {
+      toast.error("Failed to add regime item. Please try again.");
     }
-
   };
 
   return (
@@ -73,7 +81,11 @@ const Hero = ({ userId }: { userId: string }) => {
       </div>
 
       <div>
-        <ListingRegime />
+        {loading ? (
+          <Spinner loading={loading} />
+        ) : (
+          <ListingRegime regimes={items} userId={userId} />
+        )}
       </div>
     </div>
   );

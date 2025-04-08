@@ -7,6 +7,7 @@ export type modalFields = {
 };
 
 export type RegimItem = {
+  id?: string;
   userId: string;
   gender: "male" | "female";
   type: "loss" | "gain";
@@ -18,4 +19,7 @@ export type RegimItem = {
   bicep_circumference: number;
   averageRating?: number;
   userLiked?: number;
+  createdAt?: string;
+  updatedAt?: string;
+  regime?: string;
 };

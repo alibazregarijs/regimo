@@ -45,7 +45,7 @@ export const formFieldsMaker = ({ type }: { type: string }) => {
   }
 };
 
-export const randomImage = (index: number) => {
+export const randomImage = () => {
   const images = [
     "/regime-food-vector1-removebg-preview.png",
     "/regime-food-vector2-removebg-preview.png",
@@ -57,11 +57,16 @@ export const randomImage = (index: number) => {
     "/regime-food-vector8-removebg-preview.png",
   ];
 
-  if (index > images.length) {
-    return images[Math.floor(Math.random() * 9) + 1];
-  }
-
-  const randomIndex = Math.floor(1 * index);
-
+  const randomIndex = Math.floor(Math.random() * images.length);
   return images[randomIndex];
 };
+
+export function formatDate(isoString:string) {
+  const date = new Date(isoString);
+
+  const year = date.getFullYear();
+  const month = date.toLocaleString("default", { month: "long" }); // e.g., "April"
+  const day = date.getDate();
+
+  return `${year}-${month}-${day}`;
+}

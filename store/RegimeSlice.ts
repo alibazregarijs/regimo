@@ -2,7 +2,6 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { RegimItem } from "@/types/root";
 
-
 type RegimeState = {
   items: RegimItem[];
   loading: boolean;
@@ -14,6 +13,20 @@ const initialState: RegimeState = {
   loading: false,
   error: null,
 };
+
+export const FetchRegimeItems = createAsyncThunk(
+  "regime/fetchRegimeItems",
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`/api/ai/regime/${userId}`);
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message || "Failed to fetch cart items");
+      }
+    }
+  }
+);
 
 export const AddRegimeItem = createAsyncThunk(
   "regim/addRegimeItem",
@@ -28,9 +41,7 @@ export const AddRegimeItem = createAsyncThunk(
         activity_level: props.activity_level,
         waist_circumference: props.waist_circumference,
         bicep_circumference: props.bicep_circumference,
-        
       });
-      console.log(response.data,"okkkkkkkkkk")
       return response.data;
     } catch (error) {
       if (error instanceof Error) {
@@ -56,11 +67,31 @@ export const RegimeSlice = createSlice({
         AddRegimeItem.fulfilled,
         (state, action: PayloadAction<RegimItem>) => {
           state.loading = false;
-          state.items.push(action.payload);
+          state.items.unshift(action.payload);
         }
       )
       // Handle rejected state
       .addCase(AddRegimeItem.rejected, (state, action) => {
+        state.loading = false;
+        state.error = (action.payload as string) || "Failed to add regime item";
+      })
+
+      // Fetch regime items
+
+      .addCase(FetchRegimeItems.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+
+      .addCase(
+        FetchRegimeItems.fulfilled,
+        (state, action: PayloadAction<RegimItem[]>) => {
+          state.loading = false;
+          state.items = action.payload;
+        }
+      )
+
+      .addCase(FetchRegimeItems.rejected, (state, action) => {
         state.loading = false;
         state.error = (action.payload as string) || "Failed to add regime item";
       });
