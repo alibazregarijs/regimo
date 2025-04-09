@@ -6,7 +6,7 @@ const page = async () => {
   const user = await getCurrentUser();
   return (
     <div className="text-light-100">
-      <Navbar />
+      <Navbar userId={user?.id || ""} />
       <Hero userId={user?.id || ""} />
     </div>
   );

@@ -7,7 +7,6 @@ interface PageProps {
 const page = async (props: PageProps) => {
   const { params } = props;
   const { userId, regimeId } = await params;
-  console.log(userId, regimeId);
   return <div>salam</div>;
 };
 
