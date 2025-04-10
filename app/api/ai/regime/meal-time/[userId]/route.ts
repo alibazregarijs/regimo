@@ -22,7 +22,7 @@ export async function GET(
 
     const { text: mealsTime } = await generateText({
       model: google("gemini-2.0-flash-001"),
-      prompt: `{${regimeField} please read above text and extract start time and end time of meal as i could have includes function on it , you should just give me an string type }`,
+      prompt: `{${regimeField} please read above text and extract time of meal like this = "7:30 PM - 8:30PM" i want just the time nothing else. }`,
     });
 
     return Response.json({ mealsTime }, { status: 200 });

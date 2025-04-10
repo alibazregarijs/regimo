@@ -22,7 +22,7 @@ export async function GET(
 
     const { text: meal } = await generateText({
       model: google("gemini-2.0-flash-001"),
-      prompt: `${regimeField} give me the meal number ${indexOfMeal}`,
+      prompt: `${regimeField} give me the meal number ${indexOfMeal} please do not add anything more except the meal.`,
     });
 
     return Response.json({ meal }, { status: 200 });

@@ -1,5 +1,6 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import React from "react";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -86,7 +87,6 @@ type TimeRange = {
   [start: string]: string;
 };
 
-
 export function getCurrentMealIndex(mealsArray: string[]): number {
   // Get the current time and convert it to minutes since midnight
   const currentTime = new Date();
@@ -118,5 +118,5 @@ export function getCurrentMealIndex(mealsArray: string[]): number {
     }
   }
 
-  return -1; // ❌ Not meal time right now
+  return 2; // ❌ Not meal time right now
 }

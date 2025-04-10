@@ -24,8 +24,9 @@ import { createContext, PropsWithChildren, useContext, useState } from "react";
 type Post = {
   title: string;
   content: string;
-  buttonText: string;
-  fields: {
+  buttonText?: string;
+  body?: string;
+  fields?: {
     name: string;
     type: string;
     label: string;
@@ -40,7 +41,9 @@ type Post = {
 
 type PostCardProps = PropsWithChildren & {
   post: Post;
-  onSubmit: (formData: Record<string, string>) => void;
+  onSubmit?: (formData: Record<string, string>) => void;
+  isOpenModal?: boolean;
+  setOpenModal?: (value: boolean) => void;
 };
 
 type PostCardContext = {
@@ -60,10 +63,16 @@ function usePostCardContext() {
   return context;
 }
 
-export function AddModal({ children, post, onSubmit }: PostCardProps) {
+export function AddModal({
+  children,
+  post,
+  onSubmit,
+  isOpenModal,
+  setOpenModal,
+}: PostCardProps) {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<Record<string, string>>(
-    post.fields.reduce((acc, field) => {
+    (post.fields || []).reduce((acc, field) => {
       acc[field.name] = field.defaultValue || "";
       return acc;
     }, {} as Record<string, string>)
@@ -85,9 +94,9 @@ export function AddModal({ children, post, onSubmit }: PostCardProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
-    setFormData({})
-    setOpen(false)
+    onSubmit?.(formData);
+    setFormData({});
+    setOpenModal?.(false);
   };
 
   return (
@@ -99,12 +108,16 @@ export function AddModal({ children, post, onSubmit }: PostCardProps) {
         handleSelectChange,
       }}
     >
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={isOpenModal} onOpenChange={setOpenModal}>
         <DialogTrigger asChild>
-          <Button>{post.title}</Button>
+          {!isOpenModal && <Button>{post.title}</Button>}
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px] md:max-w-[600px]">
-          <form onSubmit={handleSubmit}>{children}</form>
+          <form
+            onSubmit={(e: React.FormEvent<HTMLFormElement>) => handleSubmit(e)}
+          >
+            {children}
+          </form>
         </DialogContent>
       </Dialog>
     </PostCardContext.Provider>
@@ -134,53 +147,59 @@ AddModal.Body = function PostCardBody() {
     usePostCardContext();
 
   return (
-    <div className="grid gap-4 py-4">
-      <div className="grid grid-cols-2 items-center gap-4">
-        {post.fields.map((field) => (
-          <div key={field.name}>
-            {!field.inputType ? (
-              <div>
-                <Label htmlFor={field.name} className="text-right mb-2">
-                  {field.label}
-                </Label>
-                <Input
-                  id={field.name}
-                  name={field.name}
-                  type={field.type}
-                  value={formData[field.name] || ""}
-                  placeholder={field.placeholder}
-                  className="col-span-3"
-                  onChange={(e) =>
-                    handleInputChange(field.name, e.target.value)
-                  }
-                />
+    <div>
+      {post.fields ? (
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-2 items-center gap-4">
+            {post.fields?.map((field) => (
+              <div key={field.name}>
+                {!field.inputType ? (
+                  <div>
+                    <Label htmlFor={field.name} className="text-right mb-2">
+                      {field.label}
+                    </Label>
+                    <Input
+                      id={field.name}
+                      name={field.name}
+                      type={field.type}
+                      value={formData[field.name] || ""}
+                      placeholder={field.placeholder}
+                      className="col-span-3"
+                      onChange={(e) =>
+                        handleInputChange(field.name, e.target.value)
+                      }
+                    />
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Label>{field.label}</Label>
+                    <Select
+                      onValueChange={(value) =>
+                        handleSelectChange(field.name, value)
+                      }
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={field.placeholder} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          {field.inputType.map((item) => (
+                            <SelectItem key={item.value} value={item.value}>
+                              {item.name}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
               </div>
-            ) : (
-              <div className="space-y-2">
-                <Label>{field.label}</Label>
-                <Select
-                  onValueChange={(value) =>
-                    handleSelectChange(field.name, value)
-                  }
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={field.placeholder} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {field.inputType.map((item) => (
-                        <SelectItem key={item.value} value={item.value}>
-                          {item.name}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      ) : (
+        <DialogDescription className="mt-4">{post.body}</DialogDescription>
+      )}
     </div>
   );
 };
