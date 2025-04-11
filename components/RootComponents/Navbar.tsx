@@ -51,17 +51,19 @@ const Navbar = ({ userId }: { userId: string }) => {
     if (mealTimes) {
       const valuesArray = Object.values(mealTimes);
       const indexOfmealConverted = getCurrentMealIndex(valuesArray);
+      const localIndexMeal = localStorage.getItem("mealIndex")
 
-      if (!isNotifIconClicked) {
-        setIsNotification(
-          indexOfmealConverted !== -1 &&
-            !indexOfMeal.includes(indexOfmealConverted)
-        );
+      if (indexOfmealConverted === -1 || localIndexMeal === indexOfmealConverted.toString()) {
+        localStorage.setItem("mealIndex", indexOfmealConverted.toString());
+        setIsNotification(false)
+      }
+      else{
+        localStorage.setItem("mealIndex", indexOfmealConverted.toString());
+        setIsNotification(true)
       }
 
-      setIndexOfMeal((prev) => [...prev, indexOfmealConverted]);
-      mealTimeRef.current = indexOfmealConverted;
-
+      mealTimeRef.current = indexOfmealConverted
+      
       const fetchMeal = async () => {
         if (mealTimeRef.current === -1) {
           setMeal((meal) => ({ ...meal, body: "No Meal In This Time" }));

@@ -9,7 +9,7 @@ export async function GET(
   }
 ) {
   const { params } = props;
-  const {userId } = await params;
+  const { userId } = await params;
 
   try {
     const regimeQuerySnapshot = await db
@@ -26,7 +26,8 @@ export async function GET(
       );
     }
 
-    const latestRegime = regimeQuerySnapshot.docs[0]?.data()
+    const docSnap = regimeQuerySnapshot.docs[0];
+    const latestRegime = { id: docSnap.id, ...docSnap.data() };
 
     return Response.json([latestRegime], { status: 200 });
   } catch (e) {

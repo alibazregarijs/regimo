@@ -42,7 +42,6 @@ export const modalFields = [
     inputType: [
       { name: "Man", value: "man" },
       { name: "Female", value: "female" },
-
     ],
   },
   {
@@ -54,7 +53,6 @@ export const modalFields = [
     inputType: [
       { name: "Loss", value: "loss" },
       { name: "Gain", value: "gain" },
-
     ],
   },
   {
@@ -96,7 +94,6 @@ export const modalFields = [
     label: "Waist Circumference",
     placeholder: "Enter Waist CM",
     defaultValue: "60",
-    
   },
 
   {
@@ -105,6 +102,15 @@ export const modalFields = [
     label: "Bicep CM",
     placeholder: "Enter Bicep CM",
     defaultValue: "39",
-   
+  },
+];
+
+export const EditFields = [
+  {
+    name: "edit",
+    type: "text-area",
+    label: "Edit Regime",
+    placeholder: "Edit Regime",
+    defaultValue: "Male",
   },
 ];

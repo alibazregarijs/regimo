@@ -1,11 +1,13 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { randomImage, formatDate } from "@/lib/utils";
 import { Calendar2, Star1 } from "iconsax-react";
 import { RegimItem } from "@/types/root";
+import { EditFields, modalFields } from "@/constants";
 import Link from "next/link";
+import { AddModal } from "./AddModal";
 
 const ListingRegime = ({
   regimes,
@@ -18,11 +20,26 @@ const ListingRegime = ({
   singleRegime?: boolean;
   imageUrl?: string;
 }) => {
+  const post = {
+    title: "Make Change To Your Regime",
+    content: "Fill the form below to Edit regime",
+    buttonText: "Save",
+    fields: EditFields,
+  };
+
   // Generate all images upfront to ensure consistency between server and client
+  const [isEditedButtonClicked, setIsEditedButtonClicked] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const images = React.useMemo(
-    () => regimes.map(() => (singleRegime && imageUrl ? imageUrl : randomImage())),
+    () =>
+      regimes.map(() => (singleRegime && imageUrl ? imageUrl : randomImage())),
     [regimes, singleRegime, imageUrl]
   );
+
+  const handleEdit = async (formData: Record<string, string>) => {
+    console.log(formData, "formdata");
+    setIsOpen(false);
+  };
 
   return (
     <>
@@ -31,9 +48,9 @@ const ListingRegime = ({
         {regimes.map((regime, index) => (
           <div
             key={`${regime.type}-${regime.createdAt}-${index}`}
-            className={`md:${singleRegime ? "col-span-12" : "col-span-4"} border ${
-              singleRegime ? "col-span-12" : "col-span-12"
-            } space-y-4 blue-gradient-dark p-4 rounded-[20px]`}
+            className={`${
+              singleRegime ? "col-span-12" : "md:col-span-4 col-span-12"
+            } border space-y-4 blue-gradient-dark p-4 rounded-[20px]`}
           >
             <div className="w-[100px] h-[100px] relative">
               <Link
@@ -80,10 +97,27 @@ const ListingRegime = ({
             </p>
 
             <div className="mt-4">
-              <Link href={`/regime/${userId}/latest`} legacyBehavior>
-                <Button size="sm" variant="outline">
-                  {singleRegime ? "Edit Regime" : "See Details"}
-                </Button>
+              <Link
+                href={{
+                  pathname: `/regime/${userId}/latest`,
+                  query: { img: images[index] },
+                }}
+                legacyBehavior
+              >
+                {singleRegime ? (
+                  <AddModal
+                    post={post}
+                    onSubmit={handleEdit}
+                    setOpenModal={setIsOpen}
+                    isOpenModal={isOpen}
+                  >
+                    <AddModal.Title />
+                    <AddModal.Body />
+                    <AddModal.Footer />
+                  </AddModal>
+                ) : (
+                  <Button className="w-full">See Details</Button>
+                )}
               </Link>
             </div>
           </div>

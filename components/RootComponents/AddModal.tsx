@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -70,7 +71,6 @@ export function AddModal({
   isOpenModal,
   setOpenModal,
 }: PostCardProps) {
-  const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<Record<string, string>>(
     (post.fields || []).reduce((acc, field) => {
       acc[field.name] = field.defaultValue || "";
@@ -96,7 +96,7 @@ export function AddModal({
     e.preventDefault();
     onSubmit?.(formData);
     setFormData({});
-    setOpenModal?.(false);
+    setOpenModal?.(false); // This closes the modal after submission
   };
 
   return (
@@ -113,11 +113,7 @@ export function AddModal({
           {!isOpenModal && <Button>{post.title}</Button>}
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px] md:max-w-[600px]">
-          <form
-            onSubmit={(e: React.FormEvent<HTMLFormElement>) => handleSubmit(e)}
-          >
-            {children}
-          </form>
+          <form onSubmit={handleSubmit}>{children}</form>
         </DialogContent>
       </Dialog>
     </PostCardContext.Provider>
@@ -149,26 +145,39 @@ AddModal.Body = function PostCardBody() {
   return (
     <div>
       {post.fields ? (
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-2 items-center gap-4">
-            {post.fields?.map((field) => (
-              <div key={field.name}>
+        <div className="grid grid-cols-2 items-center gap-4">
+          {post.fields?.map((field) => (
+            <div
+              key={field.name}
+              className={field.type === "text-area" ? "col-span-2" : ""}
+            >
+              <div>
                 {!field.inputType ? (
-                  <div>
-                    <Label htmlFor={field.name} className="text-right mb-2">
-                      {field.label}
-                    </Label>
-                    <Input
-                      id={field.name}
-                      name={field.name}
-                      type={field.type}
-                      value={formData[field.name] || ""}
-                      placeholder={field.placeholder}
-                      className="col-span-3"
-                      onChange={(e) =>
-                        handleInputChange(field.name, e.target.value)
-                      }
-                    />
+                  <div className="space-y-2">
+                    <Label htmlFor={field.name}>{field.label}</Label>
+                    {field.type !== "text-area" ? (
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        type={field.type}
+                        value={formData[field.name] || ""}
+                        placeholder={field.placeholder}
+                        onChange={(e) =>
+                          handleInputChange(field.name, e.target.value)
+                        }
+                      />
+                    ) : (
+                      <Textarea
+                        id={field.name}
+                        name={field.name}
+                        className="w-full min-h-[120px]"
+                        placeholder={field.placeholder}
+                        value={formData[field.name] || ""}
+                        onChange={(e) =>
+                          handleInputChange(field.name, e.target.value)
+                        }
+                      />
+                    )}
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -194,8 +203,8 @@ AddModal.Body = function PostCardBody() {
                   </div>
                 )}
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       ) : (
         <DialogDescription className="mt-4">{post.body}</DialogDescription>
@@ -208,7 +217,7 @@ AddModal.Footer = function PostCardFooter() {
   const { post } = usePostCardContext();
   return (
     <DialogFooter>
-      <Button type="submit">{post.buttonText}</Button>
+      <Button className="mt-2" type="submit">{post.buttonText || "Submit"}</Button>
     </DialogFooter>
   );
 };

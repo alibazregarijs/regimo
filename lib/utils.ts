@@ -118,5 +118,5 @@ export function getCurrentMealIndex(mealsArray: string[]): number {
     }
   }
 
-  return 2; // ❌ Not meal time right now
+  return -1; // ❌ Not meal time right now
 }
