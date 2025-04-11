@@ -14,7 +14,7 @@ const Navbar = ({ userId }: { userId: string }) => {
   const [meal, setMeal] = useState({
     title: "Eat This Meal",
     content: "Pay Attention To Eat Due Time",
-    body: "",
+    body: "Loading ...",
   });
   const [isNotifIconClicked, setIsNotifIconClicked] = useState(false);
 
@@ -53,7 +53,6 @@ const Navbar = ({ userId }: { userId: string }) => {
       const indexOfmealConverted = getCurrentMealIndex(valuesArray);
 
       if (!isNotifIconClicked) {
-        console.log("Click nashode");
         setIsNotification(
           indexOfmealConverted !== -1 &&
             !indexOfMeal.includes(indexOfmealConverted)

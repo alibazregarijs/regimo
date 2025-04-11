@@ -26,9 +26,9 @@ export async function GET(
       );
     }
 
-    const latestRegime = regimeQuerySnapshot.docs[0]?.data()?.regime;
+    const latestRegime = regimeQuerySnapshot.docs[0]?.data()
 
-    return Response.json(latestRegime, { status: 200 });
+    return Response.json([latestRegime], { status: 200 });
   } catch (e) {
     console.log(e);
     return Response.json({ success: false, error: String(e) }, { status: 500 });
