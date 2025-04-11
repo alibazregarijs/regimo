@@ -7,7 +7,7 @@ const HomeLayout = async ({ children }: { children: React.ReactNode }) => {
   if (!isUserAuthenticated) redirect("/sign-in");
 
   return (
-    <div className="flex flex-col justify-start items-start mx-4 mr-4 md:mx-8 lg:mx-16 xl:mx-36">
+    <div className="flex flex-col mx-4 mr-4 md:mx-8 lg:mx-16 xl:mx-36">
       {children}
     </div>
   );

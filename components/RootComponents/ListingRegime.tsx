@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { Button } from "../ui/button";
 import { randomImage } from "@/lib/utils";
@@ -15,6 +15,10 @@ const ListingRegime = ({
   regimes: RegimItem[];
   userId: string;
 }) => {
+  const images: string[] = [];
+  regimes.map(() => {
+    images.push(randomImage());
+  });
   return (
     <div className="grid grid-cols-12 mt-20 gap-4 w-full">
       {regimes.map((regime, index) => (
@@ -23,10 +27,16 @@ const ListingRegime = ({
           className="md:col-span-4 border col-span-12 space-y-4 blue-gradient-dark p-4 rounded-[20px]"
         >
           <div className="w-[100px] h-[100px] relative">
-            <Link href={`/regime/${userId}/${regime.id}`} legacyBehavior>
+            <Link
+              href={{
+                pathname: `/regime/${userId}/latest`,
+                query: { img: images[index] },
+              }}
+              legacyBehavior
+            >
               <a>
                 <Image
-                  src={randomImage()}
+                  src={images[index]}
                   alt="nutrition-logo1"
                   className="object-contain"
                   width={100}
@@ -49,7 +59,9 @@ const ListingRegime = ({
           </div>
           <span>{regime.regime?.slice(0, 100) + " ..."}</span>
           <div className="mt-4">
-            <Button>See the Details</Button>
+            <Link href={`/regime/${userId}/latest`} legacyBehavior>
+              <Button>See the Details</Button>
+            </Link>
           </div>
         </div>
       ))}
