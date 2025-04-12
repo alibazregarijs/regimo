@@ -51,6 +51,33 @@ export const AddRegimeItem = createAsyncThunk(
   }
 );
 
+export const EditRegimeItem = createAsyncThunk(
+  "regim/editRegimeItem",
+  async (
+    {
+      userId,
+      regimeId,
+      regime,
+    }: { userId: string; regimeId: string; regime: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axios.patch(
+        `/api/ai/regime/${userId}/${regimeId}`,
+        {
+          regime,
+        }
+      );
+      console.log(response.data, "data in regime slice");
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message || "Failed to add cart item");
+      }
+    }
+  }
+);
+
 export const RegimeSlice = createSlice({
   name: "regime",
   initialState,
@@ -94,6 +121,39 @@ export const RegimeSlice = createSlice({
       .addCase(FetchRegimeItems.rejected, (state, action) => {
         state.loading = false;
         state.error = (action.payload as string) || "Failed to add regime item";
+      })
+
+      .addCase(EditRegimeItem.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        EditRegimeItem.fulfilled,
+        (
+          state,
+          action: PayloadAction<{
+            regime: string;
+            userId: string;
+            regimeId: string;
+          }>
+        ) => {
+          state.loading = false;
+          // Find and update the specific regime item
+          const index = state.items.findIndex(
+            (item) => item.id === action.payload.regimeId
+          );
+          if (index !== -1) {
+            state.items[index] = {
+              ...state.items[index],
+              regime: action.payload.regime,
+            };
+          }
+        }
+      )
+      .addCase(EditRegimeItem.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          (action.payload as string) || "Failed to edit regime item";
       });
   },
 });

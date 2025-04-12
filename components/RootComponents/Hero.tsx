@@ -22,12 +22,6 @@ const myModalFields = {
 const Hero = ({ userId }: { userId: string }) => {
   const dispatch = useRegimeDispatch();
 
-  const { items, loading, error } = useRegimeSelector((state) => state.regime);
-
-  useEffect(() => {
-    dispatch(FetchRegimeItems(userId));
-  }, [userId, dispatch]);
-
   const handleSubmit = async (formData: Record<string, string>) => {
     // Convert form data to match RegimItem type
     const submissionData: RegimItem = {
@@ -81,11 +75,7 @@ const Hero = ({ userId }: { userId: string }) => {
       </div>
 
       <div>
-        {loading ? (
-          <Spinner loading={loading} />
-        ) : (
-          <ListingRegime regimes={items} userId={userId} />
-        )}
+        <ListingRegime userId={userId} />
       </div>
     </div>
   );

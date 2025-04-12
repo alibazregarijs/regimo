@@ -123,7 +123,7 @@ export function AddModal({
 AddModal.Title = function PostCardTitle() {
   const { post } = usePostCardContext();
   return (
-    <DialogHeader>
+    <DialogHeader className="mb-4">
       <DialogTitle>{post.title}</DialogTitle>
     </DialogHeader>
   );
@@ -171,7 +171,6 @@ AddModal.Body = function PostCardBody() {
                         id={field.name}
                         name={field.name}
                         className="w-full min-h-[120px]"
-                        placeholder={field.placeholder}
                         value={formData[field.name] || ""}
                         onChange={(e) =>
                           handleInputChange(field.name, e.target.value)
@@ -217,7 +216,9 @@ AddModal.Footer = function PostCardFooter() {
   const { post } = usePostCardContext();
   return (
     <DialogFooter>
-      <Button className="mt-2" type="submit">{post.buttonText || "Submit"}</Button>
+      <Button className="mt-2" type="submit">
+        {post.buttonText || "Submit"}
+      </Button>
     </DialogFooter>
   );
 };

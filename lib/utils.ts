@@ -92,14 +92,39 @@ export function getCurrentMealIndex(mealsArray: string[]): number {
   const currentTime = new Date();
   const currentMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
 
+  if (!mealsArray || !mealsArray.length) {
+    console.warn("Meals array is empty or invalid.");
+    return -1;
+  }
+
   // Clean and prepare the string
-  const cleanedString = mealsArray[0].replace(/"\n/g, "").replace(/"/g, "");
+  const cleanedString = mealsArray[0]
+    .replace(/"\n/g, "")
+    .replace(/"/g, "")
+    .trim();
+
   const timeRanges = cleanedString.split(", ");
 
   // Helper: Convert time string (e.g. "7:00 AM") to minutes since midnight
   const timeToMinutes = (time: string): number => {
-    const [timePart, period] = time.trim().split(" ");
+    if (!time) {
+      console.warn("Invalid time string:", time);
+      return -1;
+    }
+
+    const parts = time.trim().split(" ");
+    if (parts.length !== 2) {
+      console.warn("Malformed time:", time);
+      return -1;
+    }
+
+    const [timePart, period] = parts;
     let [hours, minutes] = timePart.split(":").map(Number);
+
+    if (isNaN(hours) || isNaN(minutes)) {
+      console.warn("Invalid hour or minute:", time);
+      return -1;
+    }
 
     if (period.toUpperCase() === "PM" && hours !== 12) hours += 12;
     if (period.toUpperCase() === "AM" && hours === 12) hours = 0;
@@ -110,10 +135,17 @@ export function getCurrentMealIndex(mealsArray: string[]): number {
   // Loop through meal times and check if now is in range
   for (let i = 0; i < timeRanges.length; i++) {
     const [start, end] = timeRanges[i].split(" - ");
+    if (!start || !end) continue;
+
     const startMinutes = timeToMinutes(start);
     const endMinutes = timeToMinutes(end);
 
-    if (currentMinutes >= startMinutes && currentMinutes <= endMinutes) {
+    if (
+      startMinutes !== -1 &&
+      endMinutes !== -1 &&
+      currentMinutes >= startMinutes &&
+      currentMinutes <= endMinutes
+    ) {
       return i; // ✅ Return the index of the current meal time
     }
   }
