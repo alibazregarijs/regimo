@@ -23,3 +23,25 @@ export type RegimItem = {
   updatedAt?: string;
   regime?: string;
 };
+
+export type CollectionItem = {
+  id: string;
+  user: {
+    id: string;
+    name: string;
+  };
+  regime: {
+    id: string;
+    regime: string;
+    type: "loss" | "gain";
+    userId: string;
+    createdAt: string;
+  };
+  seen: number;
+  createdAt: string;
+  updatedAt: string;
+  liked:{
+    userId: string;
+    like:number
+  }
+};

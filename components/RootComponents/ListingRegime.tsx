@@ -31,13 +31,25 @@ const ListingRegime: React.FC<ListingRegimeProps> = ({
   const [regimes, setRegimes] = useState<RegimItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useRegimeDispatch();
-  const {items:allRegimes , loading} = useRegimeSelector((state) => state.regime);
+  const { items: allRegimes, loading } = useRegimeSelector(
+    (state) => state.regime
+  );
 
   useEffect(() => {
     dispatch(FetchRegimeItems(userId));
   }, [userId, dispatch]);
 
-  
+  const addToCallection = ({
+    regimeId,
+    userId,
+  }: {
+    regimeId: string;
+    userId: string;
+  }) => {
+    console.log(regimeId, "regimeid");
+    console.log(userId, "userid");
+  };
+
   useEffect(() => {
     if (singleRegime) {
       const regime = allRegimes.find((item) => item.id === regimeId);
@@ -160,7 +172,18 @@ const ListingRegime: React.FC<ListingRegimeProps> = ({
                   }}
                   passHref
                 >
-                  <Button className="w-full">See Details</Button>
+                  <div className="flex flex-col space-y-4">
+                    <Button>See Details</Button>
+                    <Button
+                      variant="outline"
+                      className="w-full bg-transparent text-white border-gray-700 hover:bg-gray-800 text-sm"
+                      onClick={() =>
+                        addToCallection({ regimeId: regime.id!, userId })
+                      }
+                    >
+                      Add To Collection
+                    </Button>
+                  </div>
                 </Link>
               )}
             </div>

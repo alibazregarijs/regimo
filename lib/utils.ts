@@ -79,13 +79,6 @@ export const getHours = now.toLocaleTimeString("en-US", {
   hour12: true,
 });
 
-type MealTimesInput = {
-  mealsTime: string;
-};
-
-type TimeRange = {
-  [start: string]: string;
-};
 
 export function getCurrentMealIndex(mealsArray: string[]): number {
   // Get the current time and convert it to minutes since midnight

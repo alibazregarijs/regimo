@@ -6,11 +6,8 @@ import { modalFields } from "@/constants";
 import { useRegimeDispatch } from "@/store/hook";
 import { AddRegimeItem } from "@/store/RegimeSlice";
 import { RegimItem } from "@/types/root";
-import { useEffect, useState } from "react";
-import { useRegimeSelector } from "@/store/hook";
-import { FetchRegimeItems } from "@/store/RegimeSlice";
-import Spinner from "@/components/Spinner";
 import { toast } from "sonner";
+import ListingCollection from "@/components/RootComponents/ListingCollection";
 
 const myModalFields = {
   title: "Add New Regime",
@@ -76,6 +73,9 @@ const Hero = ({ userId }: { userId: string }) => {
 
       <div>
         <ListingRegime userId={userId} />
+      </div>
+      <div>
+        <ListingCollection  />
       </div>
     </div>
   );
