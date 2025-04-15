@@ -12,6 +12,7 @@ import { EditRegimeItem } from "@/store/RegimeSlice";
 import { useRegimeDispatch } from "@/store/hook";
 import { useRegimeSelector } from "@/store/hook";
 import { FetchRegimeItems } from "@/store/RegimeSlice";
+import { AddToCollection } from "@/store/CollectionSlice";
 import { toast } from "sonner";
 import Spinner from "@/components/Spinner";
 
@@ -36,7 +37,7 @@ const ListingRegime: React.FC<ListingRegimeProps> = ({
   );
 
   useEffect(() => {
-    dispatch(FetchRegimeItems(userId));
+    if (userId) dispatch(FetchRegimeItems(userId));
   }, [userId, dispatch]);
 
   const addToCallection = ({
@@ -46,9 +47,10 @@ const ListingRegime: React.FC<ListingRegimeProps> = ({
     regimeId: string;
     userId: string;
   }) => {
-    console.log(regimeId, "regimeid");
-    console.log(userId, "userid");
+    dispatch(AddToCollection({ regimeId, userId }));
   };
+
+  console.log(regimes, "regimes in listing regime");
 
   useEffect(() => {
     if (singleRegime) {
@@ -165,26 +167,18 @@ const ListingRegime: React.FC<ListingRegimeProps> = ({
                   <AddModal.Footer />
                 </AddModal>
               ) : (
-                <Link
-                  href={{
-                    pathname: `/regime/${regime.id}`,
-                    query: { img: images[index], userId },
-                  }}
-                  passHref
-                >
-                  <div className="flex flex-col space-y-4">
-                    <Button>See Details</Button>
-                    <Button
-                      variant="outline"
-                      className="w-full bg-transparent text-white border-gray-700 hover:bg-gray-800 text-sm"
-                      onClick={() =>
-                        addToCallection({ regimeId: regime.id!, userId })
-                      }
-                    >
-                      Add To Collection
-                    </Button>
-                  </div>
-                </Link>
+                <div className="flex flex-col space-y-4">
+                  <Button>See Details</Button>
+                  <Button
+                    variant="outline"
+                    className="w-full bg-transparent text-white border-gray-700 hover:bg-gray-800 text-sm"
+                    onClick={() =>
+                      addToCallection({ regimeId: regime.id!, userId })
+                    }
+                  >
+                    Add To Collection
+                  </Button>
+                </div>
               )}
             </div>
           </div>

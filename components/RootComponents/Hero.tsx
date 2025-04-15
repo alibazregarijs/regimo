@@ -75,7 +75,7 @@ const Hero = ({ userId }: { userId: string }) => {
         <ListingRegime userId={userId} />
       </div>
       <div>
-        <ListingCollection  />
+        <ListingCollection collection={false} userId={userId}  />
       </div>
     </div>
   );

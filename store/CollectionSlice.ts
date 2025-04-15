@@ -14,29 +14,34 @@ const initialState: RegimeState = {
   error: null,
 };
 
-// export const FetchRegimeItems = createAsyncThunk(
-//   "regime/fetchRegimeItems",
-//   async (userId: string, { rejectWithValue }) => {
-//     try {
-//       const response = await axios.get(`/api/ai/regime/${userId}`);
-//       return response.data;
-//     } catch (error) {
-//       if (error instanceof Error) {
-//         return rejectWithValue(error.message || "Failed to fetch cart items");
-//       }
-//     }
-//   }
-// );
+export const FetchCollectionItems = createAsyncThunk(
+  "collection/fetchCollectionItems",
+  async () => {
+    try {
+      const response = await axios.get(`/api/ai/collection`);
+      return response.data.data;
+    } catch (error) {
+      console.log(error, "error in fetching collection items");
+    }
+  }
+);
 
 export const AddToCollection = createAsyncThunk(
-  "regim/addRegimeItem",
-  async ({regimeId,userId}:{regimeId:string,userId:string}, { rejectWithValue }) => {
+  "regim/addCollectionItem",
+  async (
+    { regimeId, userId }: { regimeId: string; userId: string },
+    { rejectWithValue }
+  ) => {
     try {
-      const response = await axios.post(`/api/ai/collection/${userId}/${regimeId}`, {
-        userId,
-        regimeId
-      });
-      return response.data;
+      const response = await axios.post(
+        `/api/ai/collection/${userId}/${regimeId}`,
+        {
+          userId,
+          regimeId,
+        }
+      );
+      console.log(response.data,"in data.response")
+      return response.data.collection;
     } catch (error) {
       if (error instanceof Error) {
         return rejectWithValue(error.message || "Failed to add cart item");
@@ -72,15 +77,48 @@ export const EditRegimeItem = createAsyncThunk(
   }
 );
 
-export const RegimeSlice = createSlice({
-  name: "regime",
+export const CollectionSlice = createSlice({
+  name: "collection",
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // Handle pending state
-      
+      .addCase(FetchCollectionItems.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+
+      .addCase(
+        FetchCollectionItems.fulfilled,
+        (state, action: PayloadAction<CollectionItem[]>) => {
+          state.loading = false;
+          state.items = action.payload;
+        }
+      )
+
+      .addCase(FetchCollectionItems.rejected, (state, action) => {
+        state.loading = false;
+        state.error = (action.payload as string) || "Failed to add regime item";
+      })
+
+      // Add to Collection
+      .addCase(AddToCollection.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        AddToCollection.fulfilled,
+        (state, action: PayloadAction<CollectionItem>) => {
+          state.loading = false;
+          console.log(action.payload,"in extra builder")
+          state.items.unshift(action.payload); // add new item to items
+        }
+      )
+      .addCase(AddToCollection.rejected, (state, action) => {
+        state.loading = false;
+        state.error = (action.payload as string) || "Failed to add regime item";
+      });
   },
 });
 
-export default RegimeSlice.reducer;
+export default CollectionSlice.reducer;

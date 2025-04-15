@@ -17,20 +17,22 @@ export async function GET() {
     // Step 2: Shuffle and take N random items
     const randomDocs = docs
       .sort(() => 0.5 - Math.random()) // Simple shuffle
-      .slice(0, 6); // Take 6 random entries
+      .slice(0, 3); // Take 6 random entries
 
     // Step 3: Enrich each with full data
     const items: CollectionItem[] = await Promise.all(
       randomDocs.map(async (doc) => {
         const data = doc.data();
 
-        console.log(data, "data in collection slice");
         // Fetch related user
         const userSnap = await db.collection("users").doc(data.userId).get();
         const userData = userSnap.exists ? userSnap.data() : null;
 
         // Fetch related regime
-        const regimeSnap = await db.collection("regimes").doc(data.regimeId).get();
+        const regimeSnap = await db
+          .collection("regimes")
+          .doc(data.regimeId)
+          .get();
         const regimeData = regimeSnap.exists ? regimeSnap.data() : null;
 
         // Fetch like data (optional)
@@ -64,9 +66,12 @@ export async function GET() {
       })
     );
 
-    return NextResponse.json({ success: true, data: items });
+    return NextResponse.json({ data: items });
   } catch (e) {
     console.error("Error fetching random collections:", e);
-    return NextResponse.json({ success: false, error: String(e) }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: String(e) },
+      { status: 500 }
+    );
   }
 }

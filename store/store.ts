@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { RegimeSlice } from './RegimeSlice';
+import { RegimeSlice  } from './RegimeSlice';
+import { CollectionSlice } from './CollectionSlice';
 
 export const store = configureStore({
   reducer: {
     regime: RegimeSlice.reducer,
+    collection: CollectionSlice.reducer,
   },
 });
 
