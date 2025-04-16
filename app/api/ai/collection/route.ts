@@ -17,7 +17,7 @@ export async function GET() {
     // Step 2: Shuffle and take N random items
     const randomDocs = docs
       .sort(() => 0.5 - Math.random()) // Simple shuffle
-      .slice(0, 3); // Take 6 random entries
+      .slice(0,6); // Take 6 random entries
 
     // Step 3: Enrich each with full data
     const items: CollectionItem[] = await Promise.all(

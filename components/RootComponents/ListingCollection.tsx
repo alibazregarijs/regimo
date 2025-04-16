@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -13,6 +13,7 @@ import { useCollectionSelector } from "@/store/hook";
 import Spinner from "@/components/Spinner";
 import { FetchCollectionItems } from "@/store/CollectionSlice";
 import Link from "next/link";
+import { CollectionItem } from "@/types/root";
 
 // Using the provided schema
 
@@ -24,6 +25,10 @@ export default function CollectionListing({
   userId: string;
 }) {
   const dispatch = useCollectionDispatch();
+  const [filter, setFilter] = useState("all");
+  const [filteredCollections, setFilteredCollections] = useState<
+    CollectionItem[]
+  >([]);
   const { items: collections, loading } = useCollectionSelector(
     (state) => state.collection
   );
@@ -32,6 +37,31 @@ export default function CollectionListing({
     dispatch(FetchCollectionItems());
   }, []);
 
+  useEffect(() => {
+    if (collections.length > 0) {
+      setFilteredCollections(collections);
+    }
+  }, [collections]);
+
+  useEffect(() => {
+    if (filter === "all") {
+      setFilteredCollections(collections);
+    } else if (filter === "recent") {
+      const sorted = [...collections].sort(
+        (a, b) =>
+          new Date(b.regime.createdAt).getTime() -
+          new Date(a.regime.createdAt).getTime()
+      );
+
+      setFilteredCollections(sorted);
+    } else {
+      setFilteredCollections(
+        collections.filter(
+          (item) => item.regime.type.toLowerCase().trim() === filter
+        )
+      );
+    }
+  }, [filter, collections]);
 
   if (loading || collections.length === 0) return <Spinner loading={loading} />;
 
@@ -52,7 +82,11 @@ export default function CollectionListing({
           </div>
 
           {/* Tabs for filtering */}
-          <Tabs defaultValue="all" className="mb-8">
+          <Tabs
+            value={filter}
+            onValueChange={setFilter}
+            className="border-gray-800"
+          >
             <TabsList className="bg-gray-900 border border-gray-800">
               <TabsTrigger
                 value="all"
@@ -80,9 +114,9 @@ export default function CollectionListing({
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="all" className="mt-6">
+            <TabsContent value={filter} className="mt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {collections.map((item, index) => (
+                {filteredCollections.map((item, index) => (
                   <Card
                     key={item.id}
                     className="bg-gradient-to-b from-gray-900 to-black border border-gray-800 rounded-xl overflow-hidden hover:shadow-[0_0_15px_rgba(168,85,247,0.15)] transition-all duration-300"

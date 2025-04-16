@@ -24,7 +24,7 @@ const Hero = ({ userId }: { userId: string }) => {
     const submissionData: RegimItem = {
       userId: userId.toString(), // Make sure userId is defined
       gender: formData.gender as "male" | "female",
-      type: "loss",
+      type: formData.type as "loss" | "gain",
       weight: formData.weight,
       height: formData.height,
       age: Number(formData.age), // Convert string to number
@@ -75,7 +75,7 @@ const Hero = ({ userId }: { userId: string }) => {
         <ListingRegime userId={userId} />
       </div>
       <div>
-        <ListingCollection collection={false} userId={userId}  />
+        <ListingCollection collection={false} userId={userId} />
       </div>
     </div>
   );
