@@ -230,7 +230,7 @@ function CollectionCard({
       </CardContent>
 
       <CardFooter className="p-4 pt-0 grid grid-cols-2 gap-2">
-        <Link href={`/collection/${userId}/${item.id}`}>
+        <Link href={`/collection/${userId}/${item.id}?username=${item.user.name}`}>
           <Button
             variant="outline"
             className="w-full bg-transparent text-white border-gray-700 hover:bg-gray-800 text-sm"

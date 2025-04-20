@@ -9,8 +9,9 @@ import { EditFields } from "@/constants";
 import Link from "next/link";
 import { AddModal } from "./AddModal";
 import { EditRegimeItem } from "@/store/RegimeSlice";
-import { useRegimeDispatch } from "@/store/hook";
-import { useRegimeSelector } from "@/store/hook";
+import { useRegimeDispatch, useCollectionDispatch } from "@/store/hook";
+import { useRegimeSelector, useCollectionSelector } from "@/store/hook";
+import { FetchRegimeFromCollection } from "@/store/CollectionSlice";
 import { FetchRegimeItems } from "@/store/RegimeSlice";
 import { AddToCollection } from "@/store/CollectionSlice";
 import { toast } from "sonner";
@@ -21,6 +22,7 @@ interface ListingRegimeProps {
   userId: string;
   singleRegime?: boolean;
   imageUrl?: string;
+  collectionId?: string;
 }
 
 const ListingRegime: React.FC<ListingRegimeProps> = ({
@@ -28,17 +30,30 @@ const ListingRegime: React.FC<ListingRegimeProps> = ({
   userId,
   singleRegime = false,
   imageUrl = "",
+  collectionId = "",
 }) => {
   const [regimes, setRegimes] = useState<RegimItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useRegimeDispatch();
+  const collectionDispatch = useCollectionDispatch();
+  const { regimes: regimesCollection, loading: collectionLoading } =
+    useCollectionSelector((state) => state.collection);
   const { items: allRegimes, loading } = useRegimeSelector(
     (state) => state.regime
   );
 
   useEffect(() => {
-    if (userId) dispatch(FetchRegimeItems(userId));
+    if (userId && !collectionId) dispatch(FetchRegimeItems(userId));
+    else {
+      collectionDispatch(FetchRegimeFromCollection({ userId, collectionId }));
+    }
   }, [userId, dispatch]);
+
+  useEffect(() => {
+    if (regimesCollection.length > 0) {
+      setRegimes(regimesCollection);
+    }
+  }, [regimesCollection]);
 
   const addToCallection = ({
     regimeId,
@@ -49,8 +64,6 @@ const ListingRegime: React.FC<ListingRegimeProps> = ({
   }) => {
     dispatch(AddToCollection({ regimeId, userId }));
   };
-
-  console.log(regimes, "regimes in listing regime");
 
   useEffect(() => {
     if (singleRegime) {
@@ -98,9 +111,10 @@ const ListingRegime: React.FC<ListingRegimeProps> = ({
     }
   };
 
-  if (loading) {
-    return <Spinner loading={loading} />;
+  if (loading || collectionLoading) {
+    return <Spinner loading={loading || collectionLoading} />;
   }
+
   return (
     <>
       {singleRegime && <h2 className="text-center">We've Got You Covered</h2>}
@@ -110,9 +124,9 @@ const ListingRegime: React.FC<ListingRegimeProps> = ({
             key={`${regime.id}-${index}`}
             className={`${
               singleRegime ? "col-span-12" : "md:col-span-4 col-span-12"
-            } border space-y-4 blue-gradient-dark p-4 rounded-[20px]`}
+            } border space-y-4 blue-gradient-dark p-4 rounded-[20px] flex flex-col h-full`}
           >
-            <div className="w-[100px] h-[100px] relative">
+            <div className="w-[100px] h-[100px] relative flex-shrink-0">
               <Link
                 href={{
                   pathname: `/regime/${regime.id}`,
@@ -148,13 +162,13 @@ const ListingRegime: React.FC<ListingRegimeProps> = ({
               </div>
             </div>
 
-            <p className="text-sm break-words whitespace-normal">
+            <p className="text-sm break-words whitespace-normal flex-grow">
               {singleRegime
                 ? regime.regime?.replace(/\*/g, "")
                 : `${regime.regime?.slice(0, 100)}...`}
             </p>
 
-            <div className="mt-4">
+            <div className="mt-4 flex-shrink-0">
               {singleRegime ? (
                 <AddModal
                   post={post}
@@ -168,16 +182,18 @@ const ListingRegime: React.FC<ListingRegimeProps> = ({
                 </AddModal>
               ) : (
                 <div className="flex flex-col space-y-4">
-                  <Button>See Details</Button>
-                  <Button
-                    variant="outline"
-                    className="w-full bg-transparent text-white border-gray-700 hover:bg-gray-800 text-sm"
-                    onClick={() =>
-                      addToCallection({ regimeId: regime.id!, userId })
-                    }
-                  >
-                    Add To Collection
-                  </Button>
+                  <Button className="w-full">See Details</Button>
+                  {!collectionId && (
+                    <Button
+                      variant="outline"
+                      className="w-full bg-transparent text-white border-gray-700 hover:bg-gray-800 text-sm"
+                      onClick={() =>
+                        addToCallection({ regimeId: regime.id!, userId })
+                      }
+                    >
+                      Add To Collection
+                    </Button>
+                  )}
                 </div>
               )}
             </div>
