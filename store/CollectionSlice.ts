@@ -1,15 +1,17 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import { CollectionItem } from "@/types/root";
+import { CollectionItem, RegimItem } from "@/types/root";
 
-type RegimeState = {
+type CollectionState = {
   items: CollectionItem[];
+  regimes: RegimItem[];
   loading: boolean;
   error: string | null;
 };
 
-const initialState: RegimeState = {
+const initialState: CollectionState = {
   items: [],
+  regimes: [],
   loading: false,
   error: null,
 };
@@ -40,7 +42,7 @@ export const AddToCollection = createAsyncThunk(
           regimeId,
         }
       );
-      console.log(response.data,"in data.response")
+      console.log(response.data, "in data.response");
       return response.data.collection;
     } catch (error) {
       if (error instanceof Error) {
@@ -73,6 +75,23 @@ export const EditRegimeItem = createAsyncThunk(
       if (error instanceof Error) {
         return rejectWithValue(error.message || "Failed to add cart item");
       }
+    }
+  }
+);
+
+export const FetchRegimeFromCollection = createAsyncThunk(
+  "collection/fetchRegimeFromCollection",
+  async (
+    { userId, collectionId }: { userId: string; collectionId: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await axios.get(
+        `/api/ai/collection/${userId}/regimes?collectionId=${collectionId}`
+      );
+      return response.data.regimes;
+    } catch (error) {
+      console.log(error, "error in fetching collection items");
     }
   }
 );
@@ -110,13 +129,32 @@ export const CollectionSlice = createSlice({
         AddToCollection.fulfilled,
         (state, action: PayloadAction<CollectionItem>) => {
           state.loading = false;
-          console.log(action.payload,"in extra builder")
+          console.log(action.payload, "in extra builder");
           state.items.unshift(action.payload); // add new item to items
         }
       )
       .addCase(AddToCollection.rejected, (state, action) => {
         state.loading = false;
         state.error = (action.payload as string) || "Failed to add regime item";
+      })
+
+      // Fetch Regimes From Collection
+      .addCase(FetchRegimeFromCollection.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        FetchRegimeFromCollection.fulfilled,
+        (state, action: PayloadAction<RegimItem[]>) => {
+          state.loading = false;
+          state.regimes = action.payload; // or merge/append depending on your use case
+        }
+      )
+      .addCase(FetchRegimeFromCollection.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          (action.payload as string) ||
+          "Failed to fetch regimes from collection";
       });
   },
 });

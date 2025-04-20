@@ -45,9 +45,12 @@ export async function POST(
       .get();
 
     if (isRegimAlreadyInCollection.docs.length > 0) {
-      return Response.json({ success:false, error: "Regime already in collection" }, {
-        status: 400,
-      });
+      return Response.json(
+        { success: false, error: "Regime already in collection" },
+        {
+          status: 400,
+        }
+      );
     }
 
     const docRef = await db.collection("collections").add({
@@ -89,4 +92,3 @@ export async function POST(
   }
 }
 
-// get collections
